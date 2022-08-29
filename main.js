@@ -1,6 +1,9 @@
 const {app, BrowserWindow} = require('electron')
 const path = require('path')
 
+// https://google.github.io/mediapipe/getting_started/javascript (Docu)
+// https://codepen.io/mediapipe/full/wvJyQpq (Demo)
+
 app.whenReady().then(() => {
   const mainWindow = new BrowserWindow({
     width: 800,
