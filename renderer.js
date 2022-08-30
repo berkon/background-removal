@@ -44,10 +44,15 @@ backgroundImage.onload = async () => {
     }
 
     const selfieSegmentation = new SelfieSegmentation ({
-        locateFile: file => { return `https://cdn.jsdelivr.net/npm/@mediapipe/selfie_segmentation@0.1/${file}` }
+        locateFile: file => { 
+            return `./node_modules/@mediapipe/selfie_segmentation/${file}`
+//          return `https://cdn.jsdelivr.net/npm/@mediapipe/selfie_segmentation@0.1/${file}`
+        }
     })
 
-    await selfieSegmentation.initialize() // https://github.com/google/mediapipe/issues/2823
+    // This initialize() call is not present in the web-demo. But according to this post it looks like it is necessary:
+    // https://github.com/google/mediapipe/issues/2823. Looks like it fixes the issue with the freezing video at statup.
+    await selfieSegmentation.initialize()
     selfieSegmentation.onResults(onResults)
 
     // modelSelection: 1 (landscape model => faster), 0 (general model => slower)

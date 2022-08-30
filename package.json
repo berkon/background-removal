@@ -1,6 +1,6 @@
 {
   "name": "background-removal-demo",
-  "version": "0.1.0",
+  "version": "0.3.0",
   "description": "Background Removal Demo App",
   "main": "main.js",
   "scripts": {
