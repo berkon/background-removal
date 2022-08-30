@@ -1,5 +1,6 @@
 {
   "name": "background-removal-demo",
+  "productName": "Background Removal Demo App",
   "version": "0.3.0",
   "description": "Background Removal Demo App",
   "main": "main.js",

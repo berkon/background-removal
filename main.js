@@ -1,5 +1,6 @@
 const {app, BrowserWindow} = require('electron')
 const path = require('path')
+const { productName, name, author, version } = require ( './package.json' )
 
 // https://google.github.io/mediapipe/getting_started/javascript (Docu)
 // https://codepen.io/mediapipe/full/wvJyQpq (Demo)
@@ -16,6 +17,11 @@ app.whenReady().then(() => {
   })
 
   mainWindow.loadFile('index.html')
+
+  mainWindow.webContents.on ('did-finish-load', () => {
+    mainWindow.setTitle ( productName + " V" + version )
+  })
+
   mainWindow.webContents.openDevTools()
 })
 
