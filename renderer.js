@@ -78,6 +78,11 @@ backgroundImage.onload = async () => {
                     canvasElement.height = height
                     await selfieSegmentation.send({image: input})
                 },
+            }),
+            new controls.Slider({
+                title: 'Quality',
+                field: 'modelSelection',
+                discrete: ['High (slower)', 'Low (faster)']
             })
         ])
         .on ( x => {
