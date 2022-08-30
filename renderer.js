@@ -15,7 +15,7 @@ let activeEffect = 'mask'
 const backgroundImage = new Image()
 backgroundImage.src = 'beach.png'
 
-backgroundImage.onload = function() {
+backgroundImage.onload = async () => {
     let backgroundFill = canvasCtx.createPattern ( backgroundImage, 'no-repeat' )
 
     function onResults(results) {
@@ -44,11 +44,13 @@ backgroundImage.onload = function() {
     }
 
     const selfieSegmentation = new SelfieSegmentation ({
-        locateFile: (file) => { return `https://cdn.jsdelivr.net/npm/@mediapipe/selfie_segmentation@0.1/${file}` }
+        locateFile: file => { return `https://cdn.jsdelivr.net/npm/@mediapipe/selfie_segmentation@0.1/${file}` }
     })
 
+    await selfieSegmentation.initialize() // https://github.com/google/mediapipe/issues/2823
     selfieSegmentation.onResults(onResults)
 
+    // modelSelection: 1 (landscape model => faster), 0 (general model => slower)
     new controls
         .ControlPanel ( controlsElement, {
             selfieMode: true,
