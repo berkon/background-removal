@@ -2,44 +2,45 @@ const controls = window;
 const mpSelfieSegmentation = window;
 const videoElement = document.getElementsByClassName('input_video')[0]
 const canvasElement = document.getElementsByClassName('output_canvas')[0]
+const bkgCanvasElement = document.createElement('canvas');
+bkgCanvasElement.width = 1280
+bkgCanvasElement.height = 720
 const controlsElement = document.getElementsByClassName('control-panel')[0]
 const canvasCtx = canvasElement.getContext('2d')
-
+const bkgCanvasCtx = bkgCanvasElement.getContext('2d')
 const fpsControl = new controls.FPS()
 
 const spinner = document.querySelector('.loading')
 spinner.ontransitionend = () => { spinner.style.display = 'none' }
 
-let activeEffect = 'mask'
-
 const backgroundImage = new Image()
 backgroundImage.src = 'beach.png'
 
 backgroundImage.onload = async () => {
-    let backgroundFill = canvasCtx.createPattern ( backgroundImage, 'no-repeat' )
-
     function onResults(results) {
         document.body.classList.add('loaded')
         fpsControl.tick()
         canvasCtx.save()
+
+        // Clear both canvases
         canvasCtx.clearRect(0, 0, canvasElement.width, canvasElement.height)
-        canvasCtx.drawImage( results.segmentationMask, 0, 0, canvasElement.width, canvasElement.height)
+        bkgCanvasCtx.clearRect(0, 0, bkgCanvasElement.width, bkgCanvasElement.height)
 
-        if (activeEffect === 'mask' || activeEffect === 'both') {
-            canvasCtx.globalCompositeOperation = 'source-in'
-            // This can be a color or a texture or whatever...
-            canvasCtx.fillStyle = '#00FF007F';
-            canvasCtx.fillRect(0, 0, canvasElement.width, canvasElement.height);
-        } else {
-            canvasCtx.globalCompositeOperation = 'source-out';
-            //canvasCtx.fillStyle = '#0000FF7F';
-            canvasCtx.fillStyle = backgroundFill
-            canvasCtx.fillRect(0, 0, canvasElement.width, canvasElement.height);
-        }
+        // Draw original video frame onto to a hidden canvas and blur it
+        bkgCanvasCtx.drawImage(results.image, 0, 0, canvasElement.width, canvasElement.height)
+        bkgCanvasCtx.filter = 'blur(10px)';
 
-        // Only overwrite missing pixels.
+        // Draw the red shape of the cut out person onto the output canvas
+        canvasCtx.drawImage(results.segmentationMask, 0, 0, canvasElement.width, canvasElement.height)
+
+        // Draw the content from the hidden (blurred) canvas onto the output canvas. But only where there is NO red person-shape
+        canvasCtx.globalCompositeOperation = 'source-out';
+        canvasCtx.drawImage(bkgCanvasElement, 0, 0);
+
+        // Draw the original video rame onto the output canvas. But only where there is the red person-shape
         canvasCtx.globalCompositeOperation = 'destination-atop';
-        canvasCtx.drawImage ( results.image, 0, 0, canvasElement.width, canvasElement.height )
+        canvasCtx.drawImage(results.image, 0, 0, canvasElement.width, canvasElement.height)
+
         canvasCtx.restore()
     }
 
